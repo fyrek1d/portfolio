@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fyrek</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-light: #ffffff;
+            --color-cream: #e8f1f8;
+            --color-blue-light: #0b7db1;
+            --color-blue-dark: #064a6b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--color-light);
+            padding: 1.5rem 2rem;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--color-blue-dark);
+            font-weight: 500;
+            font-size: 1.1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+       
+        .hero {
+            margin-top: 80px;
+            background-color: var(--color-cream);
+            padding: 80px 2rem;
+            text-align: center;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: slideInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            color: var(--color-blue-dark);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            overflow: hidden;
+            border-right: 0.1em solid var(--color-blue-dark);
+            white-space: nowrap;
+            margin: 0 auto 1rem auto;
+            width: 0;
+            animation: typing 1.2s steps(14) forwards, blink-caret 0.75s step-end infinite;
+        }
+
+        .typed-cursor {
+            display: none;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 13.9ch }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--color-blue-dark); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--color-blue-light);
+            margin-bottom: 2rem;
+            animation: fadeInScale 1s ease-out 0.4s both;
+            font-weight: 300;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--color-blue-dark);
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+            animation: fadeInScale 1s ease-out 0.6s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--color-blue-dark);
+            color: var(--color-light);
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: fadeInScale 1s ease-out 0.8s both;
+            cursor: pointer;
+            border: 2px solid var(--color-blue-dark);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* simplified CTA hover to avoid overlay bar */
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(6, 74, 107, 0.18);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 80px 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section:nth-child(even) {
+            background-color: var(--color-light);
+        }
+
+        section:nth-child(odd) {
+            background-color: var(--color-cream);
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            color: var(--color-blue-dark);
+            margin-bottom: 3rem;
+            text-align: center;
+            animation: slideInLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-weight: 700;
+        }
+
+        /* About Section */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text {
+            animation: slideInLeft 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            color: var(--color-blue-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .expertise-list {
+            animation: slideInRight 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+        }
+
+        .expertise-list h3 {
+            color: var(--color-blue-light);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .expertise-list ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .expertise-list li {
+            padding: 0.8rem;
+            background-color: var(--color-light);
+            color: var(--color-blue-dark);
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .expertise-list li:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Certifications Section */
+        .certifications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .certification-card {
+            background-color: var(--color-light);
+            padding: 2rem;
+            border-radius: 4px;
+            text-align: center;
+            animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .certification-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .certification-card:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .certification-card:nth-child(3) {
+            animation-delay: 0.5s;
+        }
+
+        .certification-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(6, 74, 107, 0.12);
+        }
+
+        .certification-card h3 {
+            color: var(--color-blue-dark);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .certification-card p {
+            color: var(--color-blue-light);
+            font-size: 0.95rem;
+        }
+
+        /* Projects Section */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .project-card {
+            background-color: var(--color-cream);
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .project-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .project-card:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .project-card:nth-child(3) {
+            animation-delay: 0.5s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 20px 50px rgba(129, 166, 198, 0.2);
+        }
+
+        .project-header {
+            background-color: var(--color-blue-light);
+            padding: 2rem;
+            color: var(--color-light);
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .project-body {
+            padding: 2rem;
+        }
+
+        .project-body p {
+            color: var(--color-blue-dark);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .project-link {
+            display: inline-block;
+            color: var(--color-blue-dark);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .project-link::after {
+            content: ' →';
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .project-link:hover {
+            color: var(--color-blue-light);
+        }
+
+        .project-link:hover::after {
+            transform: translateX(5px);
+        }
+
+        /* Skills Section */
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .skill-category {
+            animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .skill-category:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .skill-category:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .skill-category:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .skill-category h3 {
+            color: var(--color-blue-dark);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Skill badges instead of percentages */
+        .skill-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: var(--color-blue-dark);
+            color: var(--color-light);
+            padding: 0.35rem 0.6rem;
+            border-radius: 999px;
+            margin: 0.25rem 0.25rem 0.25rem 0;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Contact Section */
+        .contact-content {
+            text-align: center;
+            animation: fadeInScale 1s ease-out 0.2s both;
+        }
+
+        .contact-content p {
+            font-size: 1.1rem;
+            color: var(--color-blue-dark);
+            margin-bottom: 2rem;
+        }
+
+        .contact-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: var(--color-blue-light);
+            color: var(--color-light);
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            border: 2px solid var(--color-blue-light);
+            animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .contact-btn:hover {
+            background-color: transparent;
+            color: var(--color-blue-light);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(170, 205, 220, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--color-blue-dark);
+            color: var(--color-light);
+            text-align: center;
+            padding: 2rem;
+            animation: slideInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .expertise-list ul {
+                grid-template-columns: 1fr;
+            }
+
+            section h2 {
+                font-size: 2rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .skills-container {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .contact-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 1rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav a {
+                font-size: 1rem;
+            }
+
+            .hero {
+                padding: 40px 1rem;
+                margin-top: 120px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            section {
+                padding: 40px 1rem;
+            }
+
+            section h2 {
+                font-size: 1.6rem;
+            }
+
+            .certifications-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#certifications">Certifications</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Hi! I'm Fyrek.</h1>
+            <p class="hero-subtitle">IT & Cybersecurity Specialist</p>
+            <p class="hero-description">Expert in server management, Linux systems, and cybersecurity solutions. Dedicated to building secure, scalable infrastructure and reliable services.</p>
+            <a href="#contact" class="cta-button">Get in Touch</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <h2>About Me</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>I'm a passionate IT and cybersecurity professional with extensive experience in system administration, Linux server management, and enterprise security solutions. I combine technical expertise with a commitment to delivering reliable, secure infrastructure.</p>
+                <p>With a background in building professional web applications and managing complex IT environments, I help businesses implement robust security measures and optimize their technological infrastructure for performance and resilience.</p>
+            </div>
+            <div class="expertise-list">
+                <h3>Core Competencies</h3>
+                <ul>
+                    <li>Cybersecurity</li>
+                    <li>Linux Administration</li>
+                    <li>Server Management</li>
+                    <li>Web Development</li>
+                    <li>System Security</li>
+                    <li>IT Infrastructure</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Section -->
+    <section id="certifications">
+        <h2>Certifications</h2>
+        <div class="certifications-grid">
+            <div class="certification-card">
+                <h3>Introduction to Cybersecurity</h3>
+                <p>Comprehensive foundation in cybersecurity principles, threat analysis, and security best practices.</p>
+            </div>
+            <div class="certification-card">
+                <h3>Linux Unhatched</h3>
+                <p>Advanced Linux operating system knowledge, command-line proficiency, and system administration skills.</p>
+            </div>
+            <div class="certification-card">
+                <h3>IS2CC</h3>
+                <p>Information Security Systems Certified Consultant - Industry-recognized credential in IT security.</p>
+            </div>
+            <div class="certification-card">
+                <h3>Microsoft Learn - Windows Server</h3>
+                <p>Completed Microsoft Learn path covering Windows Server installation, configuration, and administration.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <h2>Professional Projects</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-header">
+                    <h3>Social Media Management — ZD Studios</h3>
+                </div>
+                <div class="project-body">
+                    <p>Served as Social Media Manager for ZD Studios (@zdstudiosau) for multiple years, creating content, growing audience engagement, and managing campaigns.</p>
+                    <a href="#" class="project-link">View Work</a>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-header">
+                    <h3>AIO Technologies</h3>
+                </div>
+                <div class="project-body">
+                    <p>Built aiotech.com.au - a professional business website featuring modern design, responsive layout, and secure implementation.</p>
+                    <a href="https://aiotech.com.au" class="project-link">Visit Website</a>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-header">
+                    <h3>Homelab</h3>
+                </div>
+                <div class="project-body">
+                    <p>Designed, deployed, and currently maintain a fully functioning homelab running 20+ services for development, testing, and production-like environments.</p>
+                    <a href="#" class="project-link">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <h2>Technical Skills</h2>
+        <div class="skills-container">
+            <div class="skill-category">
+                <h3>Cybersecurity</h3>
+                <div class="skill-badges">
+                    <span class="badge">Threat Analysis</span>
+                    <span class="badge">Security Architecture</span>
+                    <span class="badge">Incident Response</span>
+                    <span class="badge">Threat Hunting</span>
+                    <span class="badge">Vulnerability Management</span>
+                </div>
+            </div>
+            <div class="skill-category">
+                <h3>Linux & Server Management</h3>
+                <div class="skill-badges">
+                    <span class="badge">Linux Administration</span>
+                    <span class="badge">Server Management</span>
+                    <span class="badge">System Configuration</span>
+                    <span class="badge">Homelab Maintenance</span>
+                    <span class="badge">Automation & Scripting</span>
+                </div>
+            </div>
+            <div class="skill-category">
+                <h3>Web & Dev</h3>
+                <div class="skill-badges">
+                    <span class="badge">Frontend Development</span>
+                    <span class="badge">Web Security</span>
+                    <span class="badge">Responsive Design</span>
+                    <span class="badge">API Integration</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2>Get in Touch</h2>
+        <div class="contact-content">
+            <p>Interested in discussing security solutions, infrastructure optimization, or web development projects? I'd love to hear from you.</p>
+            <div class="contact-buttons">
+                <a href="mailto:fyrek@fyrek.dev" class="contact-btn">Email</a>
+                <a href="https://aiotech.com.au" class="contact-btn">Business Website</a>
+                <a href="https://github.com" class="contact-btn">GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Fyrek - IT & Cybersecurity Specialist</p>
+        <p>(⌐■_■)</p>
+    </footer>
+
+</body>
+</html>
