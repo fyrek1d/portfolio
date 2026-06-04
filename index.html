@@ -19,6 +19,10 @@
             --color-blue-dark: #064a6b;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -589,12 +593,11 @@
         <div class="hero-content">
             <h1>Hi! I'm Fyrek.</h1>
             <p class="hero-subtitle">IT & Cybersecurity Specialist</p>
-            <p class="hero-description">Expert in Cybersecurity, IT, Linux, and server management.</p>
-            <a href="#contact" class="cta-button">Get in Touch</a>
+           <!-- <p class="hero-description">Expert in Cybersecurity, IT, Linux, and server management.</p> -->
+            <a href="#about" class="cta-button">About Me ↓</a>
         </div>
     </section>
 
-    <!-- About Section -->
     <section id="about">
         <h2>About Me</h2>
         <div class="about-content">
@@ -653,7 +656,7 @@
                     <h3>AIO Technologies</h3>
                 </div>
                 <div class="project-body">
-                    <p>Built and currently maintain my business's website aiotech.com.au.<br><br></p>
+                    <p>Built and currently maintain my business's website aiotech.com.au.<br><br><br></p>
                     <a href="https://aiotech.com.au" class="project-link">Visit Website</a>
                 </div>
             </div>
@@ -723,5 +726,32 @@
         <p>@fyrek1d</p>
         <p>(⌐■_■)</p>
     </footer>
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(event) {
+                const targetId = this.getAttribute('href').slice(1);
+                const targetElement = document.getElementById(targetId);
+                if (!targetElement) return;
+
+                event.preventDefault();
+                const startY = window.pageYOffset;
+                const targetY = targetElement.getBoundingClientRect().top + startY;
+                const distance = targetY - startY;
+                const duration = 700;
+                const easeInOutQuad = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+                let startTime = null;
+
+                function animateScroll(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    const elapsed = timestamp - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    window.scrollTo(0, startY + distance * easeInOutQuad(progress));
+                    if (progress < 1) requestAnimationFrame(animateScroll);
+                }
+
+                requestAnimationFrame(animateScroll);
+            });
+        });
+    </script>
 </body>
 </html>
