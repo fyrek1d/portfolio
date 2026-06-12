@@ -39,8 +39,17 @@
             padding: 1.5rem 2rem;
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.28s ease-in-out, box-shadow 0.2s ease-in-out, opacity 0.2s ease;
+            will-change: transform;
         }
 
+        
+        .nav-hidden {
+            transform: translateY(-100%);
+            opacity: 0.98; /* keep slightly visible for smoother GPU compositing */
+            pointer-events: none;
+            box-shadow: none;
+        }
         nav ul {
             list-style: none;
             display: flex;
@@ -752,6 +761,41 @@
                 requestAnimationFrame(animateScroll);
             });
         });
+
+        (function() {
+            const nav = document.querySelector('nav');
+            if (!nav) return;
+            let lastScroll = window.pageYOffset || document.documentElement.scrollTop;
+            let ticking = false;
+            const threshold = 20; // ignore tiny scrolls
+            const hideOffset = 50; // don't hide until user scrolls past this
+
+            function onScroll() {
+                const current = window.pageYOffset || document.documentElement.scrollTop;
+                const delta = current - lastScroll;
+
+                if (Math.abs(delta) <= threshold) {
+                    ticking = false;
+                    return;
+                }
+
+                if (current > lastScroll && current > hideOffset) {
+                    nav.classList.add('nav-hidden');
+                } else {
+                    nav.classList.remove('nav-hidden');
+                }
+
+                lastScroll = Math.max(0, current);
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(onScroll);
+                    ticking = true;
+                }
+            }, { passive: true });
+        })();
     </script>
 </body>
 </html>
