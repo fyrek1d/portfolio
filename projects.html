@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icon.png" type="image/png">
+    <title>Projects — fyrek.dev</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-light: #ffffff;
+            --color-cream: #e8f1f8;
+            --color-blue-light: #0b7db1;
+            --color-blue-dark: #064a6b;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--color-light);
+            padding: 1.5rem 2rem;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.28s ease-in-out, box-shadow 0.2s ease-in-out, opacity 0.2s ease;
+            will-change: transform;
+        }
+
+        .nav-hidden {
+            transform: translateY(-100%);
+            opacity: 0.98;
+            pointer-events: none;
+            box-shadow: none;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--color-blue-dark);
+            font-weight: 500;
+            font-size: 1.1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        nav a.active {
+            color: var(--color-blue-light);
+        }
+
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--color-blue-light);
+        }
+
+        .hero {
+            margin-top: 80px;
+            background-color: var(--color-cream);
+            padding: 80px 2rem;
+            text-align: center;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: slideInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            color: var(--color-blue-dark);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--color-blue-light);
+            margin-bottom: 2rem;
+            animation: fadeInScale 1s ease-out 0.4s both;
+            font-weight: 300;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--color-blue-dark);
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+            animation: fadeInScale 1s ease-out 0.6s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--color-blue-dark);
+            color: var(--color-light);
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: fadeInScale 1s ease-out 0.8s both;
+            cursor: pointer;
+            border: 2px solid var(--color-blue-dark);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(6, 74, 107, 0.18);
+        }
+
+        section {
+            padding: 80px 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section:nth-child(even) {
+            background-color: var(--color-light);
+        }
+
+        section:nth-child(odd) {
+            background-color: var(--color-cream);
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            color: var(--color-blue-dark);
+            margin-bottom: 3rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .project-card {
+            background-color: var(--color-cream);
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .project-card:nth-child(1) { animation-delay: 0.1s; }
+        .project-card:nth-child(2) { animation-delay: 0.2s; }
+        .project-card:nth-child(3) { animation-delay: 0.3s; }
+        .project-card:nth-child(4) { animation-delay: 0.4s; }
+        .project-card:nth-child(5) { animation-delay: 0.5s; }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(6, 74, 107, 0.12);
+        }
+
+        .project-header {
+            background-color: var(--color-blue-light);
+            padding: 2rem;
+            color: var(--color-light);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .project-header .project-tag {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        .project-body {
+            padding: 2rem;
+        }
+
+        .project-body p {
+            color: var(--color-blue-dark);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background-color: var(--color-blue-dark);
+            color: var(--color-light);
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .project-link {
+            display: inline-block;
+            color: var(--color-blue-dark);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .project-link::after {
+            content: ' →';
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .project-link:hover {
+            color: var(--color-blue-light);
+        }
+
+        .project-link:hover::after {
+            transform: translateX(5px);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .back-link a {
+            display: inline-block;
+            color: var(--color-blue-dark);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a::before {
+            content: '← ';
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .back-link a:hover {
+            color: var(--color-blue-light);
+        }
+
+        .back-link a:hover::before {
+            transform: translateX(-5px);
+        }
+
+        footer {
+            background-color: var(--color-blue-dark);
+            color: var(--color-light);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            section h2 {
+                font-size: 2rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 1rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav a {
+                font-size: 1rem;
+            }
+
+            .hero {
+                padding: 40px 1rem;
+                margin-top: 120px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            section {
+                padding: 40px 1rem;
+            }
+
+            section h2 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#certifications">Certifications</a></li>
+            <li><a href="projects.html" class="active">Projects</a></li>
+            <li><a href="index.html#skills">Skills</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>My Projects</h1>
+            <p class="hero-subtitle">Building, managing, and securing digital infrastructure</p>
+            <p class="hero-description">A collection of professional work, personal builds, and ongoing development projects spanning IT, cybersecurity, and web technologies.</p>
+            <a href="#project-list" class="cta-button">Explore Projects ↓</a>
+        </div>
+    </section>
+
+    <section id="project-list">
+        <h2>Featured Projects</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-header">
+                    <h3>Social Media Management — ZD Studios</h3>
+                    <span class="project-tag">Content Strategy & Brand Growth</span>
+                </div>
+                <div class="project-body">
+                    <p>Served as Social Media Manager for ZD Studios (@zdstudiosau), responsible for content creation, scheduling, audience engagement, and brand growth across Instagram. Developed posting strategies that increased reach and follower interaction.</p>
+                    <div class="project-tech">
+                        <span class="tech-badge">Content Strategy</span>
+                        <span class="tech-badge">Social Media</span>
+                        <span class="tech-badge">Brand Management</span>
+                    </div>
+                    <a href="https://www.instagram.com/zdstudiosau/" class="project-link">View Instagram</a>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-header">
+                    <h3>AIO Technologies</h3>
+                    <span class="project-tag">Business Website & IT Solutions</span>
+                </div>
+                <div class="project-body">
+                    <p>Designed, built, and maintain the full website for AIO Technologies (aiotech.com.au). Covers IT solutions, cybersecurity services, and business technology consulting. Built from the ground up with a focus on clean design and performance.</p>
+                    <div class="project-tech">
+                        <span class="tech-badge">Web Development</span>
+                        <span class="tech-badge">SEO</span>
+                        <span class="tech-badge">Hosting</span>
+                        <span class="tech-badge">Maintenance</span>
+                    </div>
+                    <a href="https://aiotech.com.au" class="project-link">Visit Website</a>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-header">
+                    <h3>Homelab Infrastructure</h3>
+                    <span class="project-tag">Self-Hosted Services & Testing Environment</span>
+                </div>
+                <div class="project-body">
+                    <p>Designed, deployed, and maintain a fully functioning homelab running 20+ self-hosted services. Used for development testing, personal productivity, media serving, network monitoring, and continuous learning. Built on Linux with containerised workloads.</p>
+                    <div class="project-tech">
+                        <span class="tech-badge">Linux</span>
+                        <span class="tech-badge">Docker</span>
+                        <span class="tech-badge">Networking</span>
+                        <span class="tech-badge">Server Admin</span>
+                        <span class="tech-badge">Security Hardening</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-header">
+                    <h3>This Portfolio Website</h3>
+                    <span class="project-tag">Personal Brand & Online Presence</span>
+                </div>
+                <div class="project-body">
+                    <p>Designed and built fyrek.dev as a clean, performant single-page portfolio to showcase certifications, projects, and technical skills. Built with vanilla HTML, CSS, and JavaScript — prioritising fast load times, smooth animations, and a responsive layout across all devices.</p>
+                    <div class="project-tech">
+                        <span class="tech-badge">HTML/CSS</span>
+                        <span class="tech-badge">JavaScript</span>
+                        <span class="tech-badge">Responsive Design</span>
+                        <span class="tech-badge">GitHub Pages</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="index.html">Back to Home</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>@fyrek1d</p>
+        <p>(⌐■_■)</p>
+    </footer>
+
+    <script>
+        (function() {
+            const nav = document.querySelector('nav');
+            if (!nav) return;
+            let lastScroll = window.pageYOffset || document.documentElement.scrollTop;
+            let ticking = false;
+            const threshold = 20;
+            const hideOffset = 50;
+
+            function onScroll() {
+                const current = window.pageYOffset || document.documentElement.scrollTop;
+                const delta = current - lastScroll;
+
+                if (Math.abs(delta) <= threshold) {
+                    ticking = false;
+                    return;
+                }
+
+                if (current > lastScroll && current > hideOffset) {
+                    nav.classList.add('nav-hidden');
+                } else {
+                    nav.classList.remove('nav-hidden');
+                }
+
+                lastScroll = Math.max(0, current);
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(onScroll);
+                    ticking = true;
+                }
+            }, { passive: true });
+        })();
+    </script>
+</body>
+</html>
