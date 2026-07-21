@@ -12,32 +12,59 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --navy:       #ffffff;
-      --navy-mid:   #e8f1f8;
-      --navy-light: #d0e5f3;
-      --blue:       #0b7db1;
-      --blue-bright:#0b7db1;
-      --cyan:       #064a6b;
-      --white:      #064a6b;
-      --muted:      #064a6b;
-      --border:     rgba(6,74,107,0.15);
-      --glow:       rgba(11,125,177,0.25);
-      --card-bg:    rgba(232,241,248,0.8);
+      --bg: #ffffff;
+      --bg-alt: #e8f1f8;
+      --surface: #ffffff;
+      --surface-strong: #ffffff;
+      --text: #064a6b;
+      --text-soft: #4d7084;
+      --border: rgba(6,74,107,0.15);
+      --nav-bg: rgba(255,255,255,0.88);
+      --blue: #0b7db1;
+      --blue-bright: #0b7db1;
+      --cyan: #064a6b;
+      --glow: rgba(11,125,177,0.25);
+      --card-bg: rgba(232,241,248,0.8);
+      --button-bg: #064a6b;
+      --button-text: #ffffff;
+      --hero-bg: #000000;
+      --topo-overlay: linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(6,74,107,0.28) 100%);
+    }
+
+    body.dark {
+      --bg: #060b12;
+      --bg-alt: #101726;
+      --surface: #0d1320;
+      --surface-strong: #111827;
+      --text: #eaf4ff;
+      --text-soft: #9eb6c9;
+      --border: rgba(255,255,255,0.13);
+      --nav-bg: rgba(6,11,20,0.84);
+      --blue: #4fb8ff;
+      --blue-bright: #79ceff;
+      --cyan: #4fb8ff;
+      --glow: rgba(79,184,255,0.2);
+      --card-bg: rgba(13,19,31,0.84);
+      --button-bg: #4fb8ff;
+      --button-text: #031018;
+      --hero-bg: #04070b;
+      --topo-overlay: linear-gradient(135deg, rgba(2,6,12,0.9) 0%, rgba(79,184,255,0.22) 100%);
     }
 
     html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #ffffff;
-      color: #064a6b;
+      background: var(--bg);
+      color: var(--text);
       overflow-x: hidden;
       line-height: 1.6;
+      transition: background-color 0.45s ease, color 0.45s ease;
     }
 
     /* ── SCROLLBAR ── */
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #e8f1f8; }
+    ::-webkit-scrollbar-track { background: var(--bg-alt); }
     ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
 
     /* ── CURSOR FOLLOWER ── */
@@ -67,7 +94,7 @@
     }
     body.has-cursor #cursor-dot,
     body.has-cursor #cursor-ring { opacity: 1; }
-    .cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: #064a6b; }
+    .cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: var(--text); }
 
     /* ── NAV ── */
     nav {
@@ -78,11 +105,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(255,255,255,0.88);
+      background: var(--nav-bg);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
-      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s, background-color 0.45s ease, border-color 0.45s ease;
       will-change: transform;
     }
     nav.nav-hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
@@ -95,7 +122,41 @@
       letter-spacing: 0.03em;
       text-decoration: none;
     }
-    .nav-logo span { color: #064a6b; }
+    .nav-logo span { color: var(--text); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.3rem;
+      height: 2.3rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.25s ease;
+    }
+    .theme-toggle:hover {
+      background: rgba(11,125,177,0.1);
+      transform: translateY(-1px);
+    }
+    .theme-toggle svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.7;
+    }
+    .theme-toggle .sun { display: none; }
+    body.dark .theme-toggle .moon { display: none; }
+    body.dark .theme-toggle .sun { display: block; }
 
     nav ul {
       list-style: none;
@@ -105,7 +166,7 @@
     }
     nav a {
       text-decoration: none;
-      color: #064a6b;
+      color: var(--text);
       font-size: 0.9rem;
       font-weight: 500;
       letter-spacing: 0.04em;
@@ -135,7 +196,7 @@
       justify-content: center;
       overflow: hidden;
       padding: 100px 2rem 60px;
-      background: #000;
+      background: var(--hero-bg);
     }
 
     .topo-section {
@@ -147,7 +208,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(6,74,107,0.28) 100%);
+      background: var(--topo-overlay);
       z-index: 1;
       pointer-events: none;
     }
@@ -206,13 +267,13 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: clamp(2.8rem, 7vw, 5.5rem);
       font-weight: 700;
-      color: #064a6b;
+      color: var(--text);
       line-height: 1.05;
       letter-spacing: -0.02em;
       margin-bottom: 1.2rem;
       /* typing animation */
       overflow: hidden;
-      border-right: 0.1em solid #064a6b;
+      border-right: 0.1em solid var(--text);
       white-space: nowrap;
       margin-left: auto;
       margin-right: auto;
@@ -225,7 +286,7 @@
     }
     @keyframes blink-caret {
       from, to { border-color: transparent }
-      50%      { border-color: #064a6b }
+      50%      { border-color: var(--text) }
     }
 
     .hero-subtitle {
@@ -237,7 +298,7 @@
       animation: fadeUp 0.8s ease 1.6s forwards;
       letter-spacing: 0.01em;
     }
-    .hero-subtitle strong { color: #064a6b; font-weight: 500; }
+    .hero-subtitle strong { color: var(--text); font-weight: 500; }
 
     .hero-cta-row {
       display: flex;
@@ -253,14 +314,14 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.85rem 2rem;
-      background: #064a6b;
-      color: #ffffff;
+      background: var(--button-bg);
+      color: var(--button-text);
       font-family: 'Inter', sans-serif;
       font-weight: 600;
       font-size: 0.95rem;
       text-decoration: none;
       border-radius: 6px;
-      border: 1.5px solid #064a6b;
+      border: 1.5px solid var(--button-bg);
       cursor: pointer;
       transition: background 0.25s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
     }
@@ -276,13 +337,13 @@
       gap: 0.5rem;
       padding: 0.85rem 2rem;
       background: transparent;
-      color: #064a6b;
+      color: var(--text);
       font-family: 'Inter', sans-serif;
       font-weight: 500;
       font-size: 0.95rem;
       text-decoration: none;
       border-radius: 6px;
-      border: 1.5px solid rgba(6,74,107,0.3);
+      border: 1.5px solid var(--border);
       cursor: pointer;
       transition: color 0.25s, border-color 0.25s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
     }
@@ -294,8 +355,8 @@
       max-width: 1160px;
       margin: 0 auto;
     }
-    .section-dark { background: #ffffff; }
-    .section-mid  { background: #e8f1f8; }
+    .section-dark { background: var(--surface); }
+    .section-mid  { background: var(--bg-alt); }
 
     .section-label {
       font-family: 'JetBrains Mono', monospace;
@@ -308,7 +369,7 @@
     .section-title {
       font-size: clamp(1.8rem, 4vw, 2.6rem);
       font-weight: 700;
-      color: #064a6b;
+      color: var(--text);
       margin-bottom: 3.5rem;
       line-height: 1.15;
     }
@@ -349,12 +410,12 @@
       align-items: start;
     }
     .about-text p {
-      color: #064a6b;
+      color: var(--text);
       line-height: 1.85;
       margin-bottom: 1.3rem;
       font-size: 1.02rem;
     }
-    .about-text p strong { color: #064a6b; font-weight: 600; }
+    .about-text p strong { color: var(--text); font-weight: 600; }
 
     .competency-grid {
       display: grid;
@@ -367,11 +428,11 @@
       align-items: center;
       gap: 0.65rem;
       padding: 0.7rem 0.9rem;
-      background: #ffffff;
-      border: 1px solid rgba(6,74,107,0.15);
+      background: var(--surface-strong);
+      border: 1px solid var(--border);
       border-radius: 6px;
       font-size: 0.88rem;
-      color: #064a6b;
+      color: var(--text);
       font-weight: 500;
       transition: border-color 0.25s, background 0.25s, transform 0.25s;
       cursor: default;
@@ -425,8 +486,8 @@
       margin-bottom: 1.2rem;
     }
     .cert-icon svg { width: 20px; height: 20px; stroke: var(--blue-bright); fill: none; stroke-width: 1.8; }
-    .cert-card h3 { font-size: 1.05rem; font-weight: 600; color: var(--white); margin-bottom: 0.7rem; }
-    .cert-card p  { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+    .cert-card h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 0.7rem; }
+    .cert-card p  { font-size: 0.88rem; color: var(--text-soft); line-height: 1.7; }
 
     /* ── PROJECTS ── */
     .projects-grid {
@@ -459,7 +520,7 @@
       color: var(--blue);
       margin-bottom: 0.6rem;
     }
-    .project-header h3 { font-size: 1.05rem; font-weight: 600; color: var(--white); }
+    .project-header h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); }
 
     .project-body {
       padding: 1.4rem 1.8rem 1.8rem;
@@ -467,7 +528,7 @@
       display: flex;
       flex-direction: column;
     }
-    .project-body p { font-size: 0.9rem; color: var(--muted); line-height: 1.75; flex: 1; margin-bottom: 1.2rem; }
+    .project-body p { font-size: 0.9rem; color: var(--text-soft); line-height: 1.75; flex: 1; margin-bottom: 1.2rem; }
     .project-link {
       display: inline-flex;
       align-items: center;
@@ -498,7 +559,7 @@
     .skill-cat h3 {
       font-size: 0.92rem;
       font-weight: 600;
-      color: var(--white);
+      color: var(--text);
       margin-bottom: 1.2rem;
       display: flex;
       align-items: center;
@@ -518,13 +579,13 @@
       border: 1px solid rgba(11,125,177,0.25);
       border-radius: 4px;
       font-size: 0.78rem;
-      color: var(--muted);
+      color: var(--text-soft);
       font-weight: 500;
       transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
     }
     .badge:hover {
       background: rgba(11,125,177,0.2);
-      color: var(--white);
+      color: var(--text);
       border-color: var(--blue);
       transform: translateY(-1px);
     }
@@ -537,11 +598,11 @@
     }
     .contact-wrap p {
       font-size: 1.05rem;
-      color: var(--muted);
+      color: var(--text-soft);
       line-height: 1.8;
       margin-bottom: 2.5rem;
     }
-    .contact-wrap p strong { color: var(--white); }
+    .contact-wrap p strong { color: var(--text); }
     .contact-buttons {
       display: flex;
       justify-content: center;
@@ -558,12 +619,12 @@
       font-weight: 600;
       text-decoration: none;
       border: 1.5px solid var(--border);
-      color: var(--muted);
+      color: var(--text-soft);
       background: var(--card-bg);
       transition: color 0.25s, border-color 0.25s, background 0.25s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
     }
     .contact-btn:hover {
-      color: var(--white);
+      color: var(--text);
       border-color: var(--blue);
       background: rgba(11,125,177,0.1);
       transform: translateY(-3px);
@@ -581,7 +642,7 @@
 
     /* ── FOOTER ── */
     footer {
-      background: var(--navy);
+      background: var(--surface);
       border-top: 1px solid var(--border);
       padding: 2rem 2.5rem;
       display: flex;
@@ -598,10 +659,10 @@
     }
     footer .foot-kaomoji {
       font-size: 1rem;
-      color: var(--muted);
+      color: var(--text-soft);
       letter-spacing: 0.05em;
     }
-    footer p { color: var(--muted); font-size: 0.82rem; }
+    footer p { color: var(--text-soft); font-size: 0.82rem; }
 
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
@@ -635,7 +696,25 @@
 
   <!-- ── NAV ── -->
   <nav id="main-nav">
-    <a href="#" class="nav-logo">fyrek<span>.dev</span></a>
+    <div class="nav-actions">
+      <a href="#" class="nav-logo">fyrek<span>.dev</span></a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg class="moon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>
+        </svg>
+        <svg class="sun" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4.5"/>
+          <path d="M12 2.5v2.2"/>
+          <path d="M12 19.3v2.2"/>
+          <path d="M4.7 4.7l1.6 1.6"/>
+          <path d="M17.7 17.7l1.6 1.6"/>
+          <path d="M2.5 12h2.2"/>
+          <path d="M19.3 12h2.2"/>
+          <path d="M4.7 19.3l1.6-1.6"/>
+          <path d="M17.7 6.3l1.6-1.6"/>
+        </svg>
+      </button>
+    </div>
     <ul>
       <li><a href="#about">about</a></li>
       <li><a href="#certifications">certs</a></li>
@@ -858,6 +937,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
   <script>
     /* ─── Cursor follower ─── */
+    const themeToggle = document.getElementById('theme-toggle');
     const dot  = document.getElementById('cursor-dot');
     const ring = document.getElementById('cursor-ring');
     const body = document.body;
@@ -882,6 +962,18 @@
       ring.style.top  = ringY + 'px';
       requestAnimationFrame(animateRing);
     })();
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.remove('dark');
+    } else {
+      document.body.classList.add('dark');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
 
     // enlarge ring on interactive elements
     const interactives = 'a, button, .cert-card, .project-card, .skill-cat, .competency-item, .badge';
