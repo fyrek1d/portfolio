@@ -1,0 +1,6 @@
+agents.md
+about.md
+node_modules/
+dist/
+*.log
+.env
