@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Container div hosting the interactive canvas */
+    .topo-card {
+      position: relative;
+      width: 90%;
+      max-width: 800px;
+      height: 500px;
+      border-radius: 16px;
+      overflow: hidden;
+      background-color: #000;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+      border: 1px solid #222;
+    }
+
+    /* Background Canvas */
+    .topo-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Overlay Content inside the div */
+    .content-overlay {
+      position: relative;
+      z-index: 10;
+      color: #fff;
+      padding: 3rem;
+      pointer-events: none; /* Allows mouse interactions to pass through */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .content-overlay h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .content-overlay p {
+      color: #aaa;
+      font-size: 1.1rem;
+      max-width: 400px;
+    }
+  </style>
+  <!-- Simplex Noise library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+</head>
+<body>
+
+  <!-- Target Container Div -->
+  <div class="topo-card">
+    <canvas id="topoCanvas" class="topo-canvas"></canvas>
+    
+
+  <script>
+    const canvas = document.getElementById('topoCanvas');
+    const ctx = canvas.getContext('2d');
+    const simplex = new SimplexNoise();
+
+    let width, height;
+    let time = 0;
+
+    // Mouse position & smooth spring tracking
+    const mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000 };
+    
+    // Topography settings
+    const step = 4;           // High-resolution grid step (4px) for ultra-smooth curves
+    const noiseScale = 0.0025;// Scale of topographical noise
+    const numLevels = 15;     // Number of contour isoline levels
+    const timeSpeed = 0.00025; // Gentle, hypnotic flow speed
+
+    // Gaussian interaction settings
+    const sigma = 140;        // Spread of mouse influence (radius)
+    const pullDepth = 0.35;   // Elevation depression depth (pull strength)
+
+    function resize() {
+      width = canvas.width = canvas.parentElement.clientWidth;
+      height = canvas.height = canvas.parentElement.clientHeight;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Track mouse movement relative to card
+    canvas.parentElement.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.targetX = e.clientX - rect.left;
+      mouse.targetY = e.clientY - rect.top;
+    });
+
+    canvas.parentElement.addEventListener('mouseleave', () => {
+      mouse.targetX = -1000;
+      mouse.targetY = -1000;
+    });
+
+    // Calculate height value with a smooth Gaussian well at the mouse
+    function getHeightValue(x, y) {
+      // 1. Base organic noise height [0, 1]
+      let rawNoise = (simplex.noise3D(x * noiseScale, y * noiseScale, time) + 1) / 2;
+
+      // 2. Gaussian depression centered at mouse
+      let dx = x - mouse.x;
+      let dy = y - mouse.y;
+      let distSq = dx * dx + dy * dy;
+
+      // 2D Gaussian equation: e^(-d^2 / (2 * sigma^2))
+      let gaussian = Math.exp(-distSq / (2 * sigma * sigma));
+
+      // Subtract Gaussian to pull height downward (creating smooth inward-bending contours)
+      return rawNoise - (gaussian * pullDepth);
+    }
+
+    // Main animation render loop (Marching Squares)
+    function animate() {
+      // Smoothly float mouse coordinates
+      mouse.x += (mouse.targetX - mouse.x) * 0.06;
+      mouse.y += (mouse.targetY - mouse.y) * 0.06;
+
+      time += timeSpeed;
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, width, height);
+
+      const cols = Math.ceil(width / step) + 1;
+      const rows = Math.ceil(height / step) + 1;
+
+      // Sample grid heights
+      let grid = new Array(cols);
+      for (let i = 0; i < cols; i++) {
+        grid[i] = new Array(rows);
+        for (let j = 0; j < rows; j++) {
+          grid[i][j] = getHeightValue(i * step, j * step);
+        }
+      }
+
+      // Draw lines
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.2;
+
+      for (let level = 1; level < numLevels; level++) {
+        let threshold = (level / numLevels) - 0.2; // Offset threshold range to accommodate depression
+
+        for (let i = 0; i < cols - 1; i++) {
+          for (let j = 0; j < rows - 1; j++) {
+            let x = i * step;
+            let y = j * step;
+
+            let v0 = grid[i][j];
+            let v1 = grid[i + 1][j];
+            let v2 = grid[i + 1][j + 1];
+            let v3 = grid[i][j + 1];
+
+            let state = 
+              ((v0 >= threshold) ? 8 : 0) |
+              ((v1 >= threshold) ? 4 : 0) |
+              ((v2 >= threshold) ? 2 : 0) |
+              ((v3 >= threshold) ? 1 : 0);
+
+            if (state === 0 || state === 15) continue; // Performance optimization for empty cells
+
+            let a = { x: x + step * getInterpolation(v0, v1, threshold), y: y };
+            let b = { x: x + step, y: y + step * getInterpolation(v1, v2, threshold) };
+            let c = { x: x + step * getInterpolation(v3, v2, threshold), y: y + step };
+            let d = { x: x, y: y + step * getInterpolation(v0, v3, threshold) };
+
+            ctx.beginPath();
+            switch (state) {
+              case 1: case 14: drawLine(c, d); break;
+              case 2: case 13: drawLine(b, c); break;
+              case 3: case 12: drawLine(b, d); break;
+              case 4: case 11: drawLine(a, b); break;
+              case 5: drawLine(a, d); drawLine(b, c); break;
+              case 6: case 9:  drawLine(a, c); break;
+              case 7: case 8:  drawLine(a, d); break;
+              case 10: drawLine(a, b); drawLine(c, d); break;
+            }
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function getInterpolation(val1, val2, threshold) {
+      if (Math.abs(val1 - val2) < 0.00001) return 0.5;
+      return (threshold - val1) / (val2 - val1);
+    }
+
+    function drawLine(p1, p2) {
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
