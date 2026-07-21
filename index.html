@@ -10,28 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
     :root {
-      --bg: #ffffff;
-      --bg-alt: #e8f1f8;
-      --surface: #ffffff;
-      --surface-strong: #ffffff;
-      --text: #064a6b;
-      --text-soft: #4d7084;
-      --border: rgba(6,74,107,0.15);
-      --nav-bg: rgba(255,255,255,0.88);
-      --blue: #0b7db1;
-      --blue-bright: #0b7db1;
-      --cyan: #064a6b;
-      --glow: rgba(11,125,177,0.25);
-      --card-bg: rgba(232,241,248,0.8);
-      --button-bg: #064a6b;
-      --button-text: #ffffff;
-      --hero-bg: #000000;
-      --topo-overlay: linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(6,74,107,0.28) 100%);
-    }
-
-    body.dark {
       --bg: #060b12;
       --bg-alt: #101726;
       --surface: #0d1320;
@@ -129,34 +108,6 @@
       align-items: center;
       gap: 1rem;
     }
-
-    .theme-toggle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 2.3rem;
-      height: 2.3rem;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: transparent;
-      color: var(--text);
-      cursor: pointer;
-      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.25s ease;
-    }
-    .theme-toggle:hover {
-      background: rgba(11,125,177,0.1);
-      transform: translateY(-1px);
-    }
-    .theme-toggle svg {
-      width: 1rem;
-      height: 1rem;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.7;
-    }
-    .theme-toggle .sun { display: none; }
-    body.dark .theme-toggle .moon { display: none; }
-    body.dark .theme-toggle .sun { display: block; }
 
     nav ul {
       list-style: none;
@@ -698,22 +649,6 @@
   <nav id="main-nav">
     <div class="nav-actions">
       <a href="#" class="nav-logo">fyrek<span>.dev</span></a>
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-        <svg class="moon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>
-        </svg>
-        <svg class="sun" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="4.5"/>
-          <path d="M12 2.5v2.2"/>
-          <path d="M12 19.3v2.2"/>
-          <path d="M4.7 4.7l1.6 1.6"/>
-          <path d="M17.7 17.7l1.6 1.6"/>
-          <path d="M2.5 12h2.2"/>
-          <path d="M19.3 12h2.2"/>
-          <path d="M4.7 19.3l1.6-1.6"/>
-          <path d="M17.7 6.3l1.6-1.6"/>
-        </svg>
-      </button>
     </div>
     <ul>
       <li><a href="#about">about</a></li>
@@ -937,7 +872,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
   <script>
     /* ─── Cursor follower ─── */
-    const themeToggle = document.getElementById('theme-toggle');
     const dot  = document.getElementById('cursor-dot');
     const ring = document.getElementById('cursor-ring');
     const body = document.body;
@@ -962,18 +896,6 @@
       ring.style.top  = ringY + 'px';
       requestAnimationFrame(animateRing);
     })();
-
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      document.body.classList.remove('dark');
-    } else {
-      document.body.classList.add('dark');
-    }
-
-    themeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-    });
 
     // enlarge ring on interactive elements
     const interactives = 'a, button, .cert-card, .project-card, .skill-cat, .competency-item, .badge';
