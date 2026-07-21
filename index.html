@@ -981,3 +981,34 @@
   </script>
 </body>
 </html>
+t = 50; // don't hide until user scrolls past this
+
+            function onScroll() {
+                const current = window.pageYOffset || document.documentElement.scrollTop;
+                const delta = current - lastScroll;
+
+                if (Math.abs(delta) <= threshold) {
+                    ticking = false;
+                    return;
+                }
+
+                if (current > lastScroll && current > hideOffset) {
+                    nav.classList.add('nav-hidden');
+                } else {
+                    nav.classList.remove('nav-hidden');
+                }
+
+                lastScroll = Math.max(0, current);
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(onScroll);
+                    ticking = true;
+                }
+            }, { passive: true });
+        })();
+    </script>
+</body>
+</html>
