@@ -31,6 +31,7 @@
     }
 
     html { scroll-behavior: smooth; }
+    section[id]:not(#home), .section-wrap[id], .section-dark[id] { scroll-margin-top: 90px; }
 
     body {
       font-family: 'Inter', sans-serif;
@@ -888,10 +889,10 @@
       dot.style.top  = mouseY + 'px';
     });
 
-    // ring follows with lag
+    // ring follows with less lag
     (function animateRing() {
-      ringX += (mouseX - ringX) * 0.14;
-      ringY += (mouseY - ringY) *.14;
+      ringX += (mouseX - ringX) * 0.28;
+      ringY += (mouseY - ringY) * 0.28;
       ring.style.left = ringX + 'px';
       ring.style.top  = ringY + 'px';
       requestAnimationFrame(animateRing);
@@ -1096,28 +1097,6 @@
 
     document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => revealObserver.observe(el));
 
-    /* ─── Custom smooth scroll ─── */
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', e => {
-        const id = a.getAttribute('href').slice(1);
-        const target = document.getElementById(id) || (id === '' && document.body);
-        if (!target) return;
-        e.preventDefault();
-        const start = window.scrollY;
-        const end   = target === document.body ? 0 : target.getBoundingClientRect().top + start - 70;
-        const dist  = end - start;
-        const dur   = 750;
-        let t0 = null;
-        const ease = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; // easeInOutCubic
-        function step(ts) {
-          if (!t0) t0 = ts;
-          const p = Math.min((ts - t0) / dur, 1);
-          window.scrollTo(0, start + dist * ease(p));
-          if (p < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-      });
-    });
   </script>
 </body>
 </html>
