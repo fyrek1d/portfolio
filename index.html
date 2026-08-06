@@ -924,9 +924,13 @@
       if (!canvas) return;
 
       const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
       let width = 0;
       let height = 0;
       let time = 0;
+      let frameId = null;
+      let isVisible = false;
       const mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000 };
       const step = 4;
       const noiseScale = 0.0025;
@@ -938,6 +942,24 @@
       function resizeTopo() {
         width = canvas.width = section.clientWidth;
         height = canvas.height = section.clientHeight;
+      }
+
+      function clearTopo() {
+        if (width && height) {
+          ctx.clearRect(0, 0, width, height);
+        }
+      }
+
+      function stopRendering() {
+        if (frameId !== null) {
+          cancelAnimationFrame(frameId);
+          frameId = null;
+        }
+      }
+
+      function startRendering() {
+        if (frameId !== null || !isVisible) return;
+        frameId = requestAnimationFrame(renderTopo);
       }
 
       function getHeightValue(x, y) {
@@ -960,6 +982,11 @@
       }
 
       function renderTopo() {
+        if (!isVisible) {
+          frameId = null;
+          return;
+        }
+
         mouse.x += (mouse.targetX - mouse.x) * 0.06;
         mouse.y += (mouse.targetY - mouse.y) * 0.06;
         time += timeSpeed;
@@ -1035,11 +1062,31 @@
           }
         }
 
-        requestAnimationFrame(renderTopo);
+        frameId = requestAnimationFrame(renderTopo);
       }
 
       resizeTopo();
-      window.addEventListener('resize', resizeTopo);
+      clearTopo();
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          isVisible = entry.isIntersecting;
+          if (isVisible) {
+            startRendering();
+          } else {
+            stopRendering();
+            clearTopo();
+          }
+        });
+      }, { threshold: 0.05 });
+
+      observer.observe(section);
+
+      window.addEventListener('resize', () => {
+        resizeTopo();
+        if (!isVisible) clearTopo();
+      });
+
       section.addEventListener('mousemove', e => {
         const rect = section.getBoundingClientRect();
         mouse.targetX = e.clientX - rect.left;
@@ -1049,7 +1096,6 @@
         mouse.targetX = -1000;
         mouse.targetY = -1000;
       });
-      renderTopo();
     }
 
     topoSections.forEach(initTopoSection);
