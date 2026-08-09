@@ -376,6 +376,7 @@
       margin-top: 0.5rem;
     }
     .competency-item {
+      position: relative;
       display: flex;
       align-items: center;
       gap: 0.65rem;
@@ -394,6 +395,64 @@
       background: rgba(11,125,177,0.06);
       transform: translateY(-2px);
     }
+    .competency-item:hover .competency-tooltip {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+      pointer-events: auto;
+    }
+    .competency-tooltip {
+      position: absolute;
+      top: 50%;
+      left: calc(100% + 12px);
+      right: auto;
+      transform: translateY(-50%) translateX(-8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      width: max-content;
+      min-width: 210px;
+      background: rgba(10, 18, 29, 0.98);
+      border: 1px solid rgba(79,184,255,0.16);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.28);
+      padding: 1rem;
+      z-index: 10;
+    }
+    .competency-item.left .competency-tooltip {
+      left: auto;
+      right: calc(100% + 12px);
+      transform: translateY(-50%) translateX(8px);
+    }
+    .competency-item.right .competency-tooltip {
+      left: calc(100% + 12px);
+      right: auto;
+      transform: translateY(-50%) translateX(-8px);
+    }
+    .competency-tooltip::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border-style: solid;
+    }
+    .competency-item.right .competency-tooltip::before {
+      left: -9px;
+      border-width: 9px 9px 9px 0;
+      border-color: transparent rgba(10, 18, 29, 0.98) transparent transparent;
+    }
+    .competency-item.left .competency-tooltip::before {
+      right: -9px;
+      border-width: 9px 0 9px 9px;
+      border-color: transparent transparent transparent rgba(10, 18, 29, 0.98);
+    }
+    .competency-tooltip p {
+      margin: 0 0 0.55rem;
+      color: var(--text);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      font-weight: 400;
+    }
+    .competency-tooltip p:last-child { margin-bottom: 0; }
     .competency-dot {
       width: 6px; height: 6px;
       border-radius: 50%;
@@ -494,52 +553,101 @@
     .project-link:hover { gap: 0.7rem; color: var(--cyan); }
     .project-link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-    /* ── SKILLS ── */
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-    }
-    .skill-cat {
+    /* ── WORKING NOW ── */
+    .work-now-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.8rem;
-      transition: border-color 0.3s;
+      border-radius: 16px;
+      overflow: hidden;
+      display: grid;
+      gap: 1rem;
+      max-width: 1160px;
+      margin: 0 auto;
     }
-    .skill-cat:hover { border-color: rgba(11,125,177,0.4); }
-    .skill-cat h3 {
-      font-size: 0.92rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 1.2rem;
+    .embed-panel {
+      background: #08101f;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 0.9rem 0.9rem 1rem;
+    }
+    .embed-toolbar {
       display: flex;
-      align-items: center;
-      gap: 0.6rem;
+      gap: 0.45rem;
+      margin-bottom: 0.85rem;
     }
-    .skill-cat h3::before {
-      content: '';
-      width: 3px; height: 16px;
-      background: linear-gradient(to bottom, var(--blue-bright), var(--cyan));
-      border-radius: 2px;
-      flex-shrink: 0;
+    .embed-toolbar span {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 50%;
+      background: #6b7280;
+      display: inline-block;
     }
-    .badges { display: flex; flex-wrap: wrap; gap: 0.45rem; }
-    .badge {
-      padding: 0.3rem 0.7rem;
-      background: rgba(11,125,177,0.1);
-      border: 1px solid rgba(11,125,177,0.25);
-      border-radius: 4px;
-      font-size: 0.78rem;
-      color: var(--text-soft);
-      font-weight: 500;
-      transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+    .embed-toolbar span:nth-child(1) { background: #ef4444; }
+    .embed-toolbar span:nth-child(2) { background: #fbbf24; }
+    .embed-toolbar span:nth-child(3) { background: #10b981; }
+    .embed-frame {
+      width: 100%;
+      min-height: 320px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), 0 16px 50px rgba(0,0,0,0.15);
+      position: relative;
     }
-    .badge:hover {
-      background: rgba(11,125,177,0.2);
+    .embed-frame iframe,
+    .embed-frame img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      border: none;
+      position: absolute;
+      inset: 0;
+    }
+    .embed-frame img {
+      display: none;
+    }
+    .embed-frame.fallback-active iframe {
+      display: none;
+    }
+    .embed-frame.fallback-active img {
+      display: block;
+    }
+    .embed-fallback-text {
+      display: none;
+      margin-top: 0.35rem;
+      color: #8b98a9;
+      font-size: 0.72rem;
+      line-height: 1.3;
+      opacity: 0.85;
+    }
+    .embed-frame.fallback-active + .embed-fallback-text {
+      display: block;
+    }
+    .work-now-top {
+      padding: 1rem 1.2rem 1.2rem;
+    }
+    .work-now-meta {
+      min-width: 240px;
+    }
+    .work-now-meta .project-tag {
+      display: inline-block;
+      margin-bottom: 0.55rem;
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+    .work-now-meta h3 {
+      font-size: clamp(1.35rem, 2vw, 1.7rem);
+      line-height: 1.1;
+      margin: 0;
       color: var(--text);
-      border-color: var(--blue);
-      transform: translateY(-1px);
+    }
+    .work-now-meta p {
+      margin-top: 0.9rem;
+      color: var(--text-soft);
+      line-height: 1.7;
+      max-width: 720px;
     }
 
     /* ── CONTACT ── */
@@ -621,6 +729,7 @@
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
@@ -695,12 +804,65 @@
         <div class="reveal-right d2">
           <p class="section-label" style="margin-bottom:1rem;">Core competencies</p>
           <div class="competency-grid">
-            <div class="competency-item"><span class="competency-dot"></span>Cybersecurity</div>
-            <div class="competency-item"><span class="competency-dot"></span>Linux Administration</div>
-            <div class="competency-item"><span class="competency-dot"></span>Server Management</div>
-            <div class="competency-item"><span class="competency-dot"></span>Web Development</div>
-            <div class="competency-item"><span class="competency-dot"></span>System Security</div>
-            <div class="competency-item"><span class="competency-dot"></span>IT Infrastructure</div>
+            <div class="competency-item left">
+              <span class="competency-dot"></span>Cybersecurity
+              <div class="competency-tooltip">
+                <p>Threat Analysis</p>
+                <p>Security Architecture</p>
+                <p>Incident Response</p>
+                <p>Threat Mitigation</p>
+                <p>Vulnerability Management</p>
+              </div>
+            </div>
+            <div class="competency-item right">
+              <span class="competency-dot"></span>Linux Administration
+              <div class="competency-tooltip">
+                <p>Linux Administration</p>
+                <p>Server Management</p>
+                <p>System Configuration</p>
+                <p>Homelab Maintenance</p>
+                <p>Automation &amp; Scripting</p>
+              </div>
+            </div>
+            <div class="competency-item left">
+              <span class="competency-dot"></span>Server Management
+              <div class="competency-tooltip">
+                <p>Server Monitoring</p>
+                <p>Performance Tuning</p>
+                <p>Backup &amp; Recovery</p>
+                <p>Infrastructure Reliability</p>
+                <p>Capacity Planning</p>
+              </div>
+            </div>
+            <div class="competency-item right">
+              <span class="competency-dot"></span>Web Development
+              <div class="competency-tooltip">
+                <p>Fullstack Development</p>
+                <p>Web Security</p>
+                <p>Modern Design</p>
+                <p>API Integration</p>
+              </div>
+            </div>
+            <div class="competency-item left">
+              <span class="competency-dot"></span>System Security
+              <div class="competency-tooltip">
+                <p>Risk Assessment</p>
+                <p>Endpoint Protection</p>
+                <p>Security Controls</p>
+                <p>Policy Enforcement</p>
+                <p>Audit Readiness</p>
+              </div>
+            </div>
+            <div class="competency-item right">
+              <span class="competency-dot"></span>IT Infrastructure
+              <div class="competency-tooltip">
+                <p>Infrastructure Planning</p>
+                <p>Network Design</p>
+                <p>Cloud Readiness</p>
+                <p>Service Reliability</p>
+                <p>IT Automation</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -796,41 +958,30 @@
 
   <div class="section-divider"></div>
 
-  <!-- ── SKILLS ── -->
+  <!-- ── WORKING ON NOW ── -->
   <div class="section-dark topo-section" id="skills">
     <canvas class="topo-canvas"></canvas>
     <div class="section-wrap">
-      <p class="section-label reveal">skills</p>
-      <h2 class="section-title reveal d1">Technical <span>Skills</span></h2>
-      <div class="skills-grid">
-        <div class="skill-cat reveal d1">
-          <h3>Cybersecurity</h3>
-          <div class="badges">
-            <span class="badge">Threat Analysis</span>
-            <span class="badge">Security Architecture</span>
-            <span class="badge">Incident Response</span>
-            <span class="badge">Threat Mitigation</span>
-            <span class="badge">Vulnerability Management</span>
+      <p class="section-label reveal">Current project</p>
+      <h2 class="section-title reveal d1">MediaSeer<span></span></h2>
+      <div class="work-now-card reveal d1">
+        <div class="embed-panel">
+          <div class="embed-toolbar">
+            <span></span>
+            <span></span>
+            <span></span>
           </div>
-        </div>
-        <div class="skill-cat reveal d2">
-          <h3>Linux &amp; Server Management</h3>
-          <div class="badges">
-            <span class="badge">Linux Administration</span>
-            <span class="badge">Server Management</span>
-            <span class="badge">System Configuration</span>
-            <span class="badge">Homelab Maintenance</span>
-            <span class="badge">Automation &amp; Scripting</span>
+          <div class="embed-frame fallback-active">
+            <iframe
+              src="https://demo.fyrek.dev"
+              title="MediaSeer demo"
+              loading="lazy"
+              allow="clipboard-read; clipboard-write; geolocation; microphone; camera; autoplay; encrypted-media"
+              sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+            ></iframe>
+            <img src="mediaseer.png" alt="MediaSeer preview screenshot">
           </div>
-        </div>
-        <div class="skill-cat reveal d3">
-          <h3>Web &amp; Dev</h3>
-          <div class="badges">
-            <span class="badge">Fullstack Development</span>
-            <span class="badge">Web Security</span>
-            <span class="badge">Modern Design</span>
-            <span class="badge">API Integration</span>
-          </div>
+          <p class="embed-fallback-text">Live demo unavailable (preview only).</p>
         </div>
       </div>
     </div>
@@ -914,6 +1065,33 @@
       heroGlow.style.left = (e.clientX - rect.left) + 'px';
       heroGlow.style.top  = (e.clientY - rect.top)  + 'px';
     });
+
+    /* ─── Embed fallback for blocked iframe ─── */
+    const demoIframe = document.querySelector('.embed-frame iframe');
+    const embedFrame = document.querySelector('.embed-frame');
+    if (demoIframe && embedFrame) {
+      demoIframe.addEventListener('load', () => {
+        try {
+          const href = demoIframe.contentWindow.location.href;
+          const doc = demoIframe.contentDocument;
+          const bodyText = doc && doc.body ? doc.body.textContent.trim() : '';
+          if (href && href !== 'about:blank' && bodyText !== '') {
+            embedFrame.classList.remove('fallback-active');
+          }
+        } catch (err) {
+          // cross-origin iframe loaded successfully, remove fallback
+          embedFrame.classList.remove('fallback-active');
+        }
+      });
+      demoIframe.addEventListener('error', () => {
+        embedFrame.classList.add('fallback-active');
+      });
+      setTimeout(() => {
+        if (embedFrame.classList.contains('fallback-active')) {
+          embedFrame.classList.add('fallback-active');
+        }
+      }, 2500);
+    }
 
     /* ─── Animated topographic section backgrounds ─── */
     const topoSections = document.querySelectorAll('.topo-section');
