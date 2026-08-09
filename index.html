@@ -586,25 +586,28 @@
     .embed-toolbar span:nth-child(3) { background: #10b981; }
     .embed-frame {
       width: 100%;
-      min-height: 320px;
+      min-height: 520px;
       border-radius: 14px;
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), 0 16px 50px rgba(0,0,0,0.15);
       position: relative;
+      background: #08101f;
     }
     .embed-frame iframe,
     .embed-frame img {
       width: 100%;
-      height: 100%;
       display: block;
       object-fit: cover;
       border: none;
-      position: absolute;
-      inset: 0;
+      min-height: 520px;
+    }
+    .embed-frame iframe {
+      position: relative;
     }
     .embed-frame img {
       display: none;
+      position: relative;
     }
     .embed-frame.fallback-active iframe {
       display: none;
@@ -613,15 +616,11 @@
       display: block;
     }
     .embed-fallback-text {
-      display: none;
       margin-top: 0.35rem;
       color: #8b98a9;
       font-size: 0.72rem;
       line-height: 1.3;
       opacity: 0.85;
-    }
-    .embed-frame.fallback-active + .embed-fallback-text {
-      display: block;
     }
     .work-now-top {
       padding: 1rem 1.2rem 1.2rem;
@@ -974,13 +973,11 @@
             <iframe
               src="https://demo.fyrek.dev"
               title="MediaSeer demo"
-              loading="lazy"
-              allow="clipboard-read; clipboard-write; geolocation; microphone; camera; autoplay; encrypted-media"
-              sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+              style="min-height:520px; width:100%;"
             ></iframe>
             <img src="mediaseer.png" alt="MediaSeer preview screenshot">
           </div>
-          <p class="embed-fallback-text">Live demo unavailable (preview only).</p>
+          <p id="demo-status" class="embed-fallback-text">Checking demo…</p>
         </div>
       </div>
     </div>
@@ -1068,28 +1065,29 @@
     /* ─── Embed fallback for blocked iframe ─── */
     const demoIframe = document.querySelector('.embed-frame iframe');
     const embedFrame = document.querySelector('.embed-frame');
-    if (demoIframe && embedFrame) {
-      demoIframe.addEventListener('load', () => {
-        try {
-          const href = demoIframe.contentWindow.location.href;
-          const doc = demoIframe.contentDocument;
-          const bodyText = doc && doc.body ? doc.body.textContent.trim() : '';
-          if (href && href !== 'about:blank' && bodyText !== '') {
-            embedFrame.classList.remove('fallback-active');
-          }
-        } catch (err) {
-          // cross-origin iframe loaded successfully, remove fallback
-          embedFrame.classList.remove('fallback-active');
-        }
-      });
-      demoIframe.addEventListener('error', () => {
-        embedFrame.classList.add('fallback-active');
-      });
-      setTimeout(() => {
-        if (embedFrame.classList.contains('fallback-active')) {
+    const demoStatus = document.getElementById('demo-status');
+    if (demoIframe && embedFrame && demoStatus) {
+      let loaded = false;
+      const fallbackTimeout = setTimeout(() => {
+        if (!loaded) {
           embedFrame.classList.add('fallback-active');
+          demoStatus.textContent = 'Demo load timed out; showing preview.';
         }
-      }, 2500);
+      }, 6000);
+
+      demoIframe.addEventListener('load', () => {
+        loaded = true;
+        clearTimeout(fallbackTimeout);
+        embedFrame.classList.remove('fallback-active');
+        demoStatus.textContent = 'Live demo loaded.';
+      });
+
+      demoIframe.addEventListener('error', () => {
+        loaded = true;
+        clearTimeout(fallbackTimeout);
+        embedFrame.classList.add('fallback-active');
+        demoStatus.textContent = 'Demo failed to load; showing preview.';
+      });
     }
 
     /* ─── Animated topographic section backgrounds ─── */
