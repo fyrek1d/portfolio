@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topography</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      background: #05030c;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    }
+
+    .topo-card {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 72% 30%, rgb(112 73 255 / 14%), transparent 28%),
+        radial-gradient(circle at 20% 78%, rgb(0 229 255 / 8%), transparent 30%),
+        #05030c;
+      isolation: isolate;
+    }
+
+    .topo-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgb(5 3 12 / 12%), transparent 35%, rgb(5 3 12 / 38%)),
+        radial-gradient(circle at center, transparent 30%, rgb(5 3 12 / 48%) 100%);
+    }
+
+    .topo-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      opacity: 0.92;
+    }
+
+    .content-overlay {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      color: #f5f3ff;
+      text-align: center;
+    }
+
+    .content-overlay h1 {
+      font-size: clamp(3.5rem, 15vw, 12rem);
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: -0.065em;
+      text-shadow:
+        1px 1px 0 #d9c8ff,
+        2px 2px 0 #b9a2ef,
+        3px 3px 0 #987acb,
+        0 7px 12px rgb(22 10 54 / 48%),
+        0 0 42px rgb(168 85 247 / 18%);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+</head>
+<body>
+  <div class="topo-card">
+    <canvas id="topoCanvas" class="topo-canvas"></canvas>
+    <div class="content-overlay">
+      <h1>topo.</h1>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('topoCanvas');
+    const ctx = canvas.getContext('2d');
+    const simplex = new SimplexNoise();
+
+    let width, height;
+    let time = 0;
+
+    const mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000 };
+    const step = 4;
+    const noiseScale = 0.0025;
+    const numLevels = 15;
+    const timeSpeed = 0.00025;
+    const sigma = 140;
+    const pullDepth = 0.35;
+
+    function resize() {
+      width = canvas.width = canvas.parentElement.clientWidth;
+      height = canvas.height = canvas.parentElement.clientHeight;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    canvas.parentElement.addEventListener('mousemove', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.targetX = event.clientX - rect.left;
+      mouse.targetY = event.clientY - rect.top;
+    });
+
+    canvas.parentElement.addEventListener('mouseleave', () => {
+      mouse.targetX = -1000;
+      mouse.targetY = -1000;
+    });
+
+    function getHeightValue(x, y) {
+      const rawNoise = (simplex.noise3D(x * noiseScale, y * noiseScale, time) + 1) / 2;
+      const dx = x - mouse.x;
+      const dy = y - mouse.y;
+      const gaussian = Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma));
+      return rawNoise - gaussian * pullDepth;
+    }
+
+    function animate() {
+      mouse.x += (mouse.targetX - mouse.x) * 0.06;
+      mouse.y += (mouse.targetY - mouse.y) * 0.06;
+      time += timeSpeed;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const cols = Math.ceil(width / step) + 1;
+      const rows = Math.ceil(height / step) + 1;
+      const grid = new Array(cols);
+
+      for (let i = 0; i < cols; i++) {
+        grid[i] = new Array(rows);
+        for (let j = 0; j < rows; j++) {
+          grid[i][j] = getHeightValue(i * step, j * step);
+        }
+      }
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const gradient = ctx.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, 'rgba(255, 43, 214, 0.72)');
+      gradient.addColorStop(0.48, 'rgba(154, 122, 203, 0.82)');
+      gradient.addColorStop(1, 'rgba(0, 229, 255, 0.68)');
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 0.85;
+      ctx.shadowColor = 'rgba(168, 85, 247, 0.38)';
+      ctx.shadowBlur = 3;
+
+      for (let level = 1; level < numLevels; level++) {
+        const threshold = level / numLevels - 0.2;
+
+        for (let i = 0; i < cols - 1; i++) {
+          for (let j = 0; j < rows - 1; j++) {
+            const x = i * step;
+            const y = j * step;
+            const v0 = grid[i][j];
+            const v1 = grid[i + 1][j];
+            const v2 = grid[i + 1][j + 1];
+            const v3 = grid[i][j + 1];
+
+            const state =
+              ((v0 >= threshold) ? 8 : 0) |
+              ((v1 >= threshold) ? 4 : 0) |
+              ((v2 >= threshold) ? 2 : 0) |
+              ((v3 >= threshold) ? 1 : 0);
+
+            if (state === 0 || state === 15) continue;
+
+            const a = { x: x + step * getInterpolation(v0, v1, threshold), y };
+            const b = { x: x + step, y: y + step * getInterpolation(v1, v2, threshold) };
+            const c = { x: x + step * getInterpolation(v3, v2, threshold), y: y + step };
+            const d = { x, y: y + step * getInterpolation(v0, v3, threshold) };
+
+            ctx.beginPath();
+            switch (state) {
+              case 1: case 14: drawLine(c, d); break;
+              case 2: case 13: drawLine(b, c); break;
+              case 3: case 12: drawLine(b, d); break;
+              case 4: case 11: drawLine(a, b); break;
+              case 5: drawLine(a, d); drawLine(b, c); break;
+              case 6: case 9: drawLine(a, c); break;
+              case 7: case 8: drawLine(a, d); break;
+              case 10: drawLine(a, b); drawLine(c, d); break;
+            }
+            ctx.stroke();
+          }
+        }
+      }
+
+      ctx.restore();
+      requestAnimationFrame(animate);
+    }
+
+    function getInterpolation(val1, val2, threshold) {
+      if (Math.abs(val1 - val2) < 0.00001) return 0.5;
+      return (threshold - val1) / (val2 - val1);
+    }
+
+    function drawLine(p1, p2) {
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
